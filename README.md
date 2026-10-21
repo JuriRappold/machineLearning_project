@@ -1,3 +1,12 @@
+# Splitting
+## Cleaning Data
+- 6 files each
+- save clean data in new csv files: `<original_name>_clean.csv`
+- inconsistent datetime (should be: YYYMM HH:00:00)
+    - round the date time
+    - take the avg MW/h for that hour
+ - compare thresholds at the end
+## Data Preparation
 # Installing Packages
 
 `pip install -r requirements.txt`
@@ -35,7 +44,7 @@
 ## 4. Test Model
 - redo training if accuracy is too low
   - decide on a threshold before hand
-
+ 
 # Submission
 - written project report
 - presentation
