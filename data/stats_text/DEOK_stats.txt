@@ -1,0 +1,17 @@
+DEOK
+Number of Rows Before Cleaning: 57739
+Number of Rows After Cleaning: 57739
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+              MW
+count  57739.000
+mean    3105.096
+std      599.859
+min      907.000
+25%     2687.000
+50%     3013.000
+75%     3449.000
+max     5445.000

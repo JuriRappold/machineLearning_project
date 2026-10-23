@@ -1,0 +1,17 @@
+PJME
+Number of Rows Before Cleaning: 145366
+Number of Rows After Cleaning: 145366
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+               MW
+count  145366.000
+mean    32080.223
+std      6464.012
+min     14544.000
+25%     27573.000
+50%     31421.000
+75%     35650.000
+max     62009.000

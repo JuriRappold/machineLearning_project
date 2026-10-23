@@ -1,0 +1,17 @@
+DOM
+Number of Rows Before Cleaning: 116189
+Number of Rows After Cleaning: 116189
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+               MW
+count  116189.000
+mean    10949.204
+std      2413.947
+min      1253.000
+25%      9322.000
+50%     10501.000
+75%     12378.000
+max     21651.000

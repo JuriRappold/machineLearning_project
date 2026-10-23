@@ -4,3 +4,4 @@ pandas-stubs==2.2.3.250527
 matplotlib==3.9.2
 scikit-learn==1.5.2
 IPython==8.29.0
+PyQt6==6.11.0

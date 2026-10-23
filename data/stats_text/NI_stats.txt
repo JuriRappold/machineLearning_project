@@ -1,0 +1,17 @@
+NI
+Number of Rows Before Cleaning: 58450
+Number of Rows After Cleaning: 58450
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+              MW
+count  58450.000
+mean   11701.683
+std     2371.499
+min     7003.000
+25%     9954.000
+50%    11521.000
+75%    12896.750
+max    23631.000

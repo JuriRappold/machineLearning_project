@@ -1,0 +1,17 @@
+DAYTON
+Number of Rows Before Cleaning: 121275
+Number of Rows After Cleaning: 121275
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+               MW
+count  121275.000
+mean     2037.851
+std       393.403
+min       982.000
+25%      1749.000
+50%      2009.000
+75%      2279.000
+max      3746.000
