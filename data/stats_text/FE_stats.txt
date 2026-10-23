@@ -1,0 +1,17 @@
+FE
+Number of Rows Before Cleaning: 62874
+Number of Rows After Cleaning: 62874
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+              MW
+count  62874.000
+mean    7792.159
+std     1331.268
+min        0.000
+25%     6807.000
+50%     7700.000
+75%     8556.000
+max    14032.000

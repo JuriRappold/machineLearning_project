@@ -1,0 +1,17 @@
+COMED
+Number of Rows Before Cleaning: 66497
+Number of Rows After Cleaning: 66497
+Dropped Rows: 0 (0.0)
+
+Number of Columns Before Cleaning: 2
+Number of Columns After Cleaning: 2
+Dropped Columns: 0 (0.0)
+              MW
+count  66497.000
+mean   11420.152
+std     2304.140
+min     7237.000
+25%     9780.000
+50%    11152.000
+75%    12510.000
+max    23753.000
