@@ -2,7 +2,7 @@ import pandas as pd
 from check_duplicates import count_duplicate_rows, check_duplicates
 
 def avg_after_relabel():
-    df = pd.read_csv("./data/all_data_relabelled.csv")
+    df = pd.read_csv("../data/all_data_relabelled.csv")
     # Columns
     DATETIME = "Datetime"
     MEGAWATTS= "MW"

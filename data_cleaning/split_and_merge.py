@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from check_duplicates import count_duplicate_rows
+from data_cleaning.check_duplicates import count_duplicate_rows
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
