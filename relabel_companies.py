@@ -43,10 +43,10 @@ def relabel_companies(input_path=None, output_path=None):
     return changed_rows
 
 
-def main():
+def relabel():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, default=PROJECT_ROOT / 'data' / 'all_data_two_CLEANED.csv')
-    parser.add_argument('--output', type=Path, default=PROJECT_ROOT / 'data' / 'all_data_two_relabelled.csv')
+    parser.add_argument('--input', type=Path, default=PROJECT_ROOT / 'data' / 'all_data.csv')
+    parser.add_argument('--output', type=Path, default=PROJECT_ROOT / 'data' / 'all_data_relabelled.csv')
     args = parser.parse_args()
     try:
         relabel_companies(args.input, args.output)
@@ -55,4 +55,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    relabel()

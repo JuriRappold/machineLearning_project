@@ -13,8 +13,8 @@ from plot_outliers import calculate_outliers
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-DEFAULT_INPUT = PROJECT_ROOT / 'data' / 'all_data.csv'
-DEFAULT_OUTPUT = PROJECT_ROOT / 'data' / 'all_data_outliers_removed.csv'
+DEFAULT_INPUT = PROJECT_ROOT / 'data' / 'cleaned' /'all_data_relabelled_CLEANED.csv'
+DEFAULT_OUTPUT = PROJECT_ROOT / 'data' / 'all_data_READY.csv'
 
 
 def remove_outliers(input_path=DEFAULT_INPUT, output_path=DEFAULT_OUTPUT, threshold=3.0):
@@ -55,7 +55,7 @@ def remove_outliers(input_path=DEFAULT_INPUT, output_path=DEFAULT_OUTPUT, thresh
     return result
 
 
-def main():
+def remove_outliers_py():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, default=DEFAULT_INPUT)
     parser.add_argument('--output', type=Path, default=DEFAULT_OUTPUT)
@@ -68,4 +68,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    remove_outliers_py()
