@@ -58,7 +58,7 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
     for path, data in zip(input_paths, frames):
         if 'Datetime' not in data:
             raise ValueError(f'{path.name}: missing Datetime column; no outputs written.')
-        value_columns = [column for column in data.columns if column.endswith('_MW')]
+        value_columns = [column for column in data.columns if column.endswith('MW')]
         if len(value_columns) != 1 or len(data.columns) != 2:
             raise ValueError(
                 f'{path.name}: expected only Datetime and one company_MW column; no outputs written.'
@@ -75,11 +75,11 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
             raise ValueError(f'{path.name}: missing Datetime values; no outputs written.')
         if ((timestamps.dt.microsecond != 0) | (timestamps.dt.nanosecond != 0)).any():
             raise ValueError(f'{path.name}: subsecond timestamps would lose precision; no outputs written.')
-        data.drop(columns='Datetime', inplace=True)
+        #data.drop(columns='Datetime', inplace=True)
         data.rename(columns={value_column: 'MW'}, inplace=True)
-        data.insert(0, 'Date', timestamps.dt.strftime('%Y-%m-%d'))
-        data.insert(1, 'Time', timestamps.dt.strftime('%H:%M:%S'))
-        data.insert(2, 'Company', company)
+        #data.insert(0, 'Date', timestamps.dt.strftime('%Y-%m-%d'))
+        #data.insert(1, 'Time', timestamps.dt.strftime('%H:%M:%S'))
+        data.insert(0, 'Company', company)
 
     split_dir.mkdir(parents=True, exist_ok=True)
     print('\nSaved split files:')
@@ -89,7 +89,7 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
     # Read back this run's split files, excluding any older files in the folder.
     split_frames = []
     for input_path, path in zip(input_paths, split_paths):
-        data = pd.read_csv(path, dtype={'Date': 'string', 'Time': 'string'})
+        data = pd.read_csv(path)#, dtype={'Date': 'string', 'Time': 'string'}
         if len(data) != input_counts[input_path.name]:
             raise RuntimeError(f'Row count changed while saving {path.name}')
         split_frames.append(data)
@@ -97,12 +97,14 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
     print(f'Total rows before merging: {split_total:,}')
 
     # Stack the rows without dropping any.
+    print(len(split_frames) == 12)
     merged = pd.concat(split_frames, ignore_index=True, sort=False)
     if len(merged) != input_total or len(merged) != split_total:
         raise RuntimeError('Merged row count does not match the input/split totals.')
     merged_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_csv(merged_path, index=False)
-    final_total = len(pd.read_csv(merged_path, usecols=['Date']))
+    merged.to_csv(merged_path, index=False)
+    final_total = len(pd.read_csv(merged_path, usecols=['Datetime']))
     if final_total != input_total:
         raise RuntimeError('The saved merged CSV row count does not match the input total.')
 
@@ -121,9 +123,9 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT / 'data' / 'cleaned')
-    parser.add_argument('--split-dir', type=Path, default=PROJECT_ROOT / 'data' / 'split')
-    parser.add_argument('--merged-path', type=Path, default=PROJECT_ROOT / 'data' / 'all_data.csv')
+    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT / 'data' / 'cleaned_two')
+    parser.add_argument('--split-dir', type=Path, default=PROJECT_ROOT / 'data' / 'split2')
+    parser.add_argument('--merged-path', type=Path, default=PROJECT_ROOT / 'data' / 'all_data_two.csv')
     args = parser.parse_args()
     try:
         split_and_merge(args.input_dir, args.split_dir, args.merged_path)
