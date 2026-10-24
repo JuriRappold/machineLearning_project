@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 
 
-DEFAULT_INPUT_DIR = Path(__file__).resolve().parent / 'data' / 'cleaned'
+DEFAULT_INPUT_DIR = Path(__file__).resolve().parent / 'data' / 'cleaned_two'
 
 
 def count_duplicate_rows(data):

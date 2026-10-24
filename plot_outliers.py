@@ -65,10 +65,12 @@ def plot_outliers(data, column, *, date_column=None, threshold=3.0, title=None):
     if date_column is not None:
         fig.autofmt_xdate()
     fig.tight_layout()
+    title = title.replace(" ", "_")
+    fig.savefig(fname=f"./figures/{title}.png")
     return result, fig, ax
 
 
-def main():
+def plot():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('csv', help='CSV file containing measurements')
     parser.add_argument('--column', required=True, help='Measurement column to analyze')
@@ -86,4 +88,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    plot()

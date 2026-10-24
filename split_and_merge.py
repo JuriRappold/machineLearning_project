@@ -19,21 +19,21 @@ from check_duplicates import count_duplicate_rows
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
-def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
+def split_and_merge(input_dir=None, merged_path=None):
     """Save the split and combined files, then check their row counts."""
     input_dir = Path(input_dir) if input_dir is not None else PROJECT_ROOT / 'data' / 'cleaned'
-    split_dir = Path(split_dir) if split_dir is not None else PROJECT_ROOT / 'data' / 'split'
+    #split_dir = Path(split_dir) if split_dir is not None else PROJECT_ROOT / 'data' / 'split'
     merged_path = Path(merged_path) if merged_path is not None else PROJECT_ROOT / 'data' / 'all_data.csv'
     input_paths = sorted(input_dir.glob('*.csv'))
     if not input_paths:
         raise ValueError(f'No CSV files found in {input_dir}')
-    if input_dir.resolve() == split_dir.resolve():
-        raise ValueError('Input and split directories must be different.')
+    #if input_dir.resolve() == split_dir.resolve():
+    #    raise ValueError('Input and split directories must be different.')
     if merged_path.resolve().parent == input_dir.resolve():
         raise ValueError('The merged file must not be saved in the input directory.')
-    split_paths = [split_dir / f'date_time_{path.name}' for path in input_paths]
-    if merged_path.resolve() in {path.resolve() for path in split_paths}:
-        raise ValueError('The merged filename must not overwrite a split file.')
+    #split_paths = [split_dir / f'date_time_{path.name}' for path in input_paths]
+    #if merged_path.resolve() in {path.resolve() for path in split_paths}:
+    #    raise ValueError('The merged filename must not overwrite a split file.')
 
     frames = []
     duplicate_files = []
@@ -61,9 +61,8 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
         value_columns = [column for column in data.columns if column.endswith('MW')]
         if len(value_columns) != 1 or len(data.columns) != 2:
             raise ValueError(
-                f'{path.name}: expected only Datetime and one company_MW column; no outputs written.'
+                f'{path.name}: expected only Datetime and one MW column; no outputs written.'
             )
-        value_column = value_columns[0]
         company = path.stem.removesuffix('_hourly_CLEANED')
         if not company:
             raise ValueError(f'{path.name}: missing company name in the filename; no outputs written.')
@@ -75,34 +74,18 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
             raise ValueError(f'{path.name}: missing Datetime values; no outputs written.')
         if ((timestamps.dt.microsecond != 0) | (timestamps.dt.nanosecond != 0)).any():
             raise ValueError(f'{path.name}: subsecond timestamps would lose precision; no outputs written.')
-        #data.drop(columns='Datetime', inplace=True)
-        data.rename(columns={value_column: 'MW'}, inplace=True)
-        #data.insert(0, 'Date', timestamps.dt.strftime('%Y-%m-%d'))
-        #data.insert(1, 'Time', timestamps.dt.strftime('%H:%M:%S'))
         data.insert(0, 'Company', company)
 
-    split_dir.mkdir(parents=True, exist_ok=True)
-    print('\nSaved split files:')
-    for path, data in zip(split_paths, frames):
-        data.to_csv(path, index=False)
-        print(f'  {path.name}: {len(data):,} rows')
-    # Read back this run's split files, excluding any older files in the folder.
-    split_frames = []
-    for input_path, path in zip(input_paths, split_paths):
-        data = pd.read_csv(path)#, dtype={'Date': 'string', 'Time': 'string'}
-        if len(data) != input_counts[input_path.name]:
-            raise RuntimeError(f'Row count changed while saving {path.name}')
-        split_frames.append(data)
-    split_total = sum(len(data) for data in split_frames)
-    print(f'Total rows before merging: {split_total:,}')
+
+    input_total = sum(len(data) for data in frames)
+    print(f'Total rows before merging: {input_total:,}')
 
     # Stack the rows without dropping any.
-    print(len(split_frames) == 12)
-    merged = pd.concat(split_frames, ignore_index=True, sort=False)
-    if len(merged) != input_total or len(merged) != split_total:
-        raise RuntimeError('Merged row count does not match the input/split totals.')
+    print(len(frames) == 12)
+    merged = pd.concat(frames, ignore_index=True, sort=False)
+    if len(merged) != input_total:
+        raise RuntimeError('Merged row count does not match the input/ totals.')
     merged_path.parent.mkdir(parents=True, exist_ok=True)
-    merged.to_csv(merged_path, index=False)
     merged.to_csv(merged_path, index=False)
     final_total = len(pd.read_csv(merged_path, usecols=['Datetime']))
     if final_total != input_total:
@@ -110,28 +93,25 @@ def split_and_merge(input_dir=None, split_dir=None, merged_path=None):
 
     print(f'\nMerged file: {merged_path}')
     print(f'Total input rows:         {input_total:,}')
-    print(f'Total rows before merge: {split_total:,}')
     print(f'Final merged rows:       {final_total:,}')
     print('Row totals match. No rows were dropped.')
     return {
         'input_counts': input_counts,
         'input_total': input_total,
-        'split_total': split_total,
         'merged_total': final_total,
     }
 
 
-def main():
+def merge():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT / 'data' / 'cleaned_two')
-    parser.add_argument('--split-dir', type=Path, default=PROJECT_ROOT / 'data' / 'split2')
-    parser.add_argument('--merged-path', type=Path, default=PROJECT_ROOT / 'data' / 'all_data_two.csv')
+    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT / 'data' / 'cleaned')
+    parser.add_argument('--merged-path', type=Path, default=PROJECT_ROOT / 'data' / 'all_data.csv')
     args = parser.parse_args()
     try:
-        split_and_merge(args.input_dir, args.split_dir, args.merged_path)
+        split_and_merge(args.input_dir, args.merged_path)
     except (ValueError, OSError, RuntimeError) as error:
         parser.exit(1, f'Error: {error}\n')
 
 
 if __name__ == '__main__':
-    main()
+    merge()
