@@ -10,8 +10,8 @@
 import pandas as pd
 
 def clean():
-    DATA_INPUT_DIR = "./data/original/{name}_hourly.csv"
-    DATA_CLEANED_DIR = "./data/cleaned/{name}_hourly_CLEANED.csv"
+    DATA_INPUT_DIR = "../tmp/data/original/{name}_hourly.csv"
+    DATA_CLEANED_DIR = "../tmp/data/cleaned/{name}_hourly_CLEANED.csv"
     DATA_FILENAMES = [
         "AEP",
         "COMED",

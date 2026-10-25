@@ -44,15 +44,17 @@ def train():
 
     # 6. Hyperparameter tuning with time-aware CV
     param_dist = {
-        'n_estimators': [100, 200, 400],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_leaf': [1, 2, 5],
-        'max_features': ['sqrt', 0.5, 1.0],
+        'n_estimators': [100, 200],  # drop 400
+        'max_depth': [10, 20, 30],  # drop None
+        'min_samples_leaf': [2, 5],  # drop 1
+        'max_features': ['sqrt', 0.5],  # drop 1.0
     }
     search = RandomizedSearchCV(
-        RandomForestRegressor(random_state=42, n_jobs=-1),
+        RandomForestRegressor(random_state=42, n_jobs=1),  # inner: serial
         param_dist, n_iter=15, cv=TimeSeriesSplit(n_splits=5),
-        scoring='neg_mean_absolute_error', random_state=42, n_jobs=-1)
+        scoring='neg_mean_absolute_error', random_state=42,
+        n_jobs=-1)  # outer: parallel
+    print(X_train.shape, X_train.dtype, X_train.nbytes / 1e6, "MB")
     search.fit(X_train, y_train)
     rf = search.best_estimator_
 
@@ -132,6 +134,21 @@ def train():
     # Save
     joblib.dump(rf, 'rf_energy_model.joblib')
 
+def check_size():
+    df = pd.read_csv("data/all_data_READY.csv")
+    read_length=len(df)
+    df = pd.read_csv("data/cleaned/all_data_relabelled_CLEANED.csv")
+    cleaned_relabeled = len(df)
+    df = pd.read_csv("data/all_data_relabelled.csv")
+    relabeled = len(df)
+
+    df = pd.read_csv("data/all_data.csv")
+    all = len(df)
+
+    print(f"Ready: {read_length}\nCleaned Relabeled: {cleaned_relabeled}\nRelabeled: {relabeled}\nAll: {all}")
+    print(df.info())
+    print(df.head())
 
 if __name__ == "__main__":
-    train()
+    #train()
+    check_size()
