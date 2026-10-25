@@ -1,52 +1,66 @@
-# Splitting
-## Cleaning Data
-- 6 files each
-- save clean data in new csv files: `<original_name>_clean.csv`
-- inconsistent datetime (should be: YYYMM HH:00:00)
-    - round the date time
-    - take the avg MW/h for that hour
- - compare thresholds at the end
-## Data Preparation
-# Installing Packages
+# Hourly Electricity Load Prediction
 
-`pip install -r requirements.txt`
+A machine learning course project comparing:
+- **Linear regression**, implemented from scratch with NumPy and gradient descent.
+- **Random forest regression**, implemented with scikit-learn.
 
-# Steps
-## 1. Cleaning Data
-1. drop duplicates
-2. drop missing, corrupted(impossible) rows
-3. outliers (z-score > threshold)
-   1. visualize outliers
-   2. group them if they are many
-   3. extract feature: high_energy_user (True/False) || class: HIGH_ENERGY_USER, LOW_ENERGY_USER
-   4. play around w/ threshold
+The target is electricity load in **MW**. See `report.pdf` for results and limitations; `report.tex` contains the LaTeX source.
 
-## 2. Data Preparation
-1. Encoding the classes
-2. Feature Extraction
-   1. Energy Company (from the files)
-   2. outlier grouping classes
-3. Feature Selection:
-   1. Datetime
-4. Label/Target:
-   1. hourly energy consumption
-5. Split the data
-   1. Train: 0.8 --> what about a validation data set ([K-fold Cross-Validation](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html))
-   2. Testing: 0.2
-6. Choose Model (based of input features & labels/targets)
-   1. Linear/Logistic Regression Model (Numeric/Classfication) implemented from scratch
-   2. Other Model (Decision Trees, Forest model, Support Vector Regression, Neural Network, or others)
+## Setup
 
-## 3. Train Model
-1. Train, Evaluate, and Fine Tune
-   1. Gradient Descent
-   2. Gini Score 
-## 4. Test Model
-- redo training if accuracy is too low
-  - decide on a threshold before hand
- 
-# Submission
-- written project report
-- presentation
-- might be good:
-  - jupyter notebook
+Use Python 3.12 and run commands from the project root:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirments.txt
+```
+
+## Data
+
+Source: [Hourly Energy Consumption on Kaggle](https://www.kaggle.com/datasets/robikscube/hourly-energy-consumption).
+
+Both training workflows read `data/all_data_READY.csv`, containing:
+- `Company`: company/region identifier.
+- `Datetime`: hourly timestamp.
+- `MW`: observed electricity load.
+
+The prepared dataset contains 933,922 observations across ten groups. Preparation removes duplicate timestamps, missing values, invalid hourly timestamps, incomplete days, and pooled Z-score outliers. PJME, PJMW, and PJM_Load are combined into PJM, averaging overlapping readings.
+
+## Train the Models
+
+Ensure the prepared CSV is present, then run:
+
+```bash
+mkdir -p figures/statistics
+
+# Linear regression
+python -c "from training_model import train_linea_regression; train_linea_regression()"
+
+# Random forest (hyperparameter tuning can take considerable time)
+python -c "from random_forests import train; train()"
+```
+
+Training evaluates the models and overwrites their saved outputs:
+- `lr_gradient_energy_model.joblib`
+- `rf_energy_model.joblib`
+- Evaluation figures in `figures/statistics/`.
+
+The forest model is approximately 423 MiB before compression. 
+## Main Files
+
+| File | Purpose |
+|---|---|
+| `clean.py`, `split_and_merge.py`, `relabel_companies.py` | Initial data preparation |
+| `average_duplicates_after_joining_of_PJM.py`, `remove_outliers.py` | PJM averaging and outlier filtering |
+| `feature_extraction.py` | Linear-model features, encoding, scaling, and chronological split |
+| `linear_regression.py` | From-scratch regression and evaluation metrics |
+| `training_model.py` | Linear regression training |
+| `random_forests.py` | Forest features, tuning, training, and evaluation |
+| `main.py` | Preparation followed by training both models |
+
+**Note:** `main.py` expects existing intermediate data. Initial cleaning, merging, and relabeling calls are disabled in `data_preparation.py`; it is not a complete raw-data rebuild command.
+
+## Evaluation Notes
+
+Models use chronological train/test splits and MAE, RMSE, and R². The forest uses historical-load features, while linear regression does not, and their test samples differ. Gaps affect lag timing, and the linear time-trend feature currently resets between training and testing. These limitations are discussed in the report.
