@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from data_cleaning.check_duplicates import count_duplicate_rows
+from check_duplicates import count_duplicate_rows
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -42,7 +42,7 @@ def split_and_merge(input_dir=None, merged_path=None):
     for path in input_paths:
         data = pd.read_csv(path)
         data = data.loc[:, ~data.columns.str.startswith('Unnamed:')]
-        duplicate_count = count_duplicate_rows(data)
+        duplicate_count, dupli_rows = count_duplicate_rows(data)
         input_counts[path.name] = len(data)
         print(f'  {path.name}: {len(data):,} rows; {duplicate_count:,} duplicate rows')
         if duplicate_count:

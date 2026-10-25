@@ -1,6 +1,6 @@
-from data_cleaning.main import data_preparation
-from random_forests.random_forests import train
-from linearRegression.training_model import train_linea_regression
+from data_preparation import data_preparation
+from random_forests import train
+from training_model import train_linea_regression
 
 def main():
     data_preparation()

@@ -1,8 +1,15 @@
+from pathlib import Path
+
 import pandas as pd
 from check_duplicates import count_duplicate_rows, check_duplicates
 
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
 def avg_after_relabel():
-    df = pd.read_csv("../data/all_data_relabelled.csv")
+    DATA_DIR = PROJECT_ROOT / 'data'
+    input_path = DATA_DIR /'all_data_relabelled.csv'
+    df = pd.read_csv(input_path)
     # Columns
     DATETIME = "Datetime"
     MEGAWATTS= "MW"
@@ -54,18 +61,19 @@ def avg_after_relabel():
     # Update only MW values for the retained rows.
     df.loc[pjm.index, "MW"] = pjm["MW"]
 
-    duplicate_report = count_duplicate_rows(df)
+    duplicate_report, duplicates = count_duplicate_rows(df)
     print(duplicate_report)
     assert (duplicate_report == 0)
 
     new_length = len(df)
     print(f"Length comparison {original_length} != {new_length}: {original_length != new_length}")
     print("Saving....")
-    df.to_csv("../data/cleaned/all_data_relabelled_CLEANED.csv")
+    merged_path = DATA_DIR / 'cleaned' / 'all_data_relabelled_CLEANED.csv'
+    df.to_csv(merged_path, index=False)
     print("Done Saving")
 
 def checking():
-    df = pd.read_csv("../data/all_data_relabelled.csv")
+    df = pd.read_csv("data/all_data_relabelled.csv")
     # Columns
     DATETIME = "Datetime"
     MEGAWATTS = "MW"

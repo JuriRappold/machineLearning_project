@@ -75,7 +75,7 @@ def _build_base(df):
         is_weekend,
         years_since_start,
     ])
-    companies = df["company"].to_numpy()
+    companies = df["Company"].to_numpy()
     y = df["MW"].to_numpy(dtype=float)
     return numeric, companies, y
 
@@ -159,4 +159,4 @@ def test():
         sets.add(cat[0])
     print(sets)
 
-test()
+#test()

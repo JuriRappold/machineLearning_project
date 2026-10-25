@@ -6,10 +6,14 @@ from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.inspection import permutation_importance
 import joblib
-
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parent
 def train():
     # 1. Load & parse
-    df = pd.read_csv("data/all_data_READY.csv")
+    input_path = PROJECT_ROOT / 'data' / 'all_data_READY.csv'
+    figure_path = PROJECT_ROOT / 'figures' / 'statistics'
+
+    df = pd.read_csv(input_path)
 
     df['Datetime'] = pd.to_datetime(df['Datetime'], format='%Y-%m-%d %H:%M:%S')
     df = df.drop_duplicates(['Datetime', 'Company']).sort_values(['Company', 'Datetime'])
@@ -43,18 +47,28 @@ def train():
     X_test, y_test = test[features], test['MW']
 
     # 6. Hyperparameter tuning with time-aware CV
+    """
     param_dist = {
         'n_estimators': [100, 200],  # drop 400
         'max_depth': [10, 20, 30],  # drop None
         'min_samples_leaf': [2, 5],  # drop 1
         'max_features': ['sqrt', 0.5],  # drop 1.0
     }
+    """
+    param_dist = {
+        'n_estimators': [100, 150],  # Lower the upper limit
+        'max_depth': [10, 15],  # No longer use 20/30
+        'min_samples_leaf': [3, 5],  # Slightly increase leaf minimum samples
+        'max_features': ['sqrt', 0.5],
+    }
     search = RandomizedSearchCV(
         RandomForestRegressor(random_state=42, n_jobs=1),  # inner: serial
         param_dist, n_iter=15, cv=TimeSeriesSplit(n_splits=5),
         scoring='neg_mean_absolute_error', random_state=42,
-        n_jobs=-1)  # outer: parallel
-    print(X_train.shape, X_train.dtype, X_train.nbytes / 1e6, "MB")
+        n_jobs=-3, # outer: parallel
+        verbose=2
+    )
+    #print(X_train.shape, X_train.dtypes, X_train.nbytes / 1e6, "MB")
     search.fit(X_train, y_train)
     rf = search.best_estimator_
 
@@ -88,11 +102,9 @@ def train():
     axes[1].legend()
 
     plt.tight_layout()
+    merged_path = figure_path / 'random_forests_table.png'
     #plt.show()
-    try:
-        plt.savefig("../figures/statistics/random_forests_table.png")
-    except FileNotFoundError:
-        plt.savefig("figures/statistics/random_forests_table.png")
+    fig.savefig(merged_path)
 
     # 8. Feature importance / selection
     imp = permutation_importance(rf, X_test, y_test, n_repeats=10, random_state=42)
@@ -107,10 +119,8 @@ def train():
     ax.set_title('Permutation Feature Importance (test set)')
     ax.set_xlabel('Mean decrease in score when feature is shuffled')
     plt.tight_layout()
-    try:
-        plt.savefig("../figures/statistics/random_forests_permutation_importance.png")
-    except FileNotFoundError:
-        plt.savefig("figures/statistics/random_forests_permutation_importance.png")
+    merged_path = figure_path / 'random_forests_permutation_importance.png'
+    fig.savefig(merged_path)
 
     residuals = y_test - pred
 
@@ -126,10 +136,8 @@ def train():
     axes[1].set_xlabel('Residual (MW)')
 
     plt.tight_layout()
-    try:
-        plt.savefig("../figures/statistics/random_forests_residuals.png")
-    except FileNotFoundError:
-        plt.savefig("figures/statistics/random_forests_residuals.png")
+    merged_path = figure_path / 'random_forests_residuals.png'
+    fig.savefig(merged_path)
 
     # Save
     joblib.dump(rf, 'rf_energy_model.joblib')

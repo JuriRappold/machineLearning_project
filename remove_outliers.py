@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from data_cleaning.plot_outliers import calculate_outliers
+from plot_outliers import calculate_outliers
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent

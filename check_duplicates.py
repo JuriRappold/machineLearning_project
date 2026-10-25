@@ -16,7 +16,10 @@ DEFAULT_INPUT_DIR = Path(__file__).resolve().parent / 'data' #/ 'cleaned_two'
 def count_duplicate_rows(data):
     """Count repeated rows, ignoring saved CSV indices."""
     values = data.loc[:, ~data.columns.astype(str).str.startswith('Unnamed:')]
-    duplicates = values.duplicated(subset=["Datetime", "Company"],keep='first')
+    print(values.columns)
+    subset_columns = ["Datetime"]
+    if "Company" in values.columns: subset_columns.append("Company")
+    duplicates = values.duplicated(subset=subset_columns, keep='first')
     return int(duplicates.sum()), duplicates
 
 

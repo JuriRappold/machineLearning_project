@@ -8,10 +8,15 @@
 """
 
 import pandas as pd
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parent
+print(PROJECT_ROOT)
 
 def clean():
-    DATA_INPUT_DIR = "../tmp/data/original/{name}_hourly.csv"
-    DATA_CLEANED_DIR = "../tmp/data/cleaned/{name}_hourly_CLEANED.csv"
+    DATA_INPUT_DIR = PROJECT_ROOT / 'data' / 'original' #"/home/yuri-gagarin/Documents/Machine Learning/Project/machineLearningProject/data/original/{name}_hourly.csv"
+    DATA_CLEANED_DIR = PROJECT_ROOT / 'data' / 'cleaned' #"/home/yuri-gagarin/Documents/Machine Learning/Project/machineLearningProject/data/cleaned/{name}_hourly_CLEANED.csv"#"data/cleaned/{name}_hourly_CLEANED.csv"
+    filename_template = "{name}_hourly.csv"
+    cleaned_filename_template = "{name}_hourly_CLEANED.csv"
     DATA_FILENAMES = [
         "AEP",
         "COMED",
@@ -36,7 +41,8 @@ def clean():
 
     for file in DATA_FILENAMES:
         # 1. load files & convert MW column name
-        df = pd.read_csv(DATA_INPUT_DIR.format(name=file))
+        file_path = DATA_INPUT_DIR / filename_template.format(name=file)
+        df = pd.read_csv(file_path)
         columns = [DATETIME, MEGAWATTS]
         df.columns = columns
 
@@ -100,13 +106,12 @@ def clean():
         # Done
         print(f"Dropped {drop_counter} rows from {file}: {drop_counter} / {original_length} ({(drop_counter/original_length)*100}%)")
         DROP_COUNTER += drop_counter
-        df.to_csv(DATA_CLEANED_DIR.format(name=file))
+        mergedpath = DATA_CLEANED_DIR / cleaned_filename_template.format(name=file)
+        df.to_csv(mergedpath, index=False)
         print(df.columns)
 
     print(f"Dropped {DROP_COUNTER} rows from: {DROP_COUNTER} / {ALL_ROWS_COUNT} ({(DROP_COUNTER / ALL_ROWS_COUNT) * 100:.2f}%)")
 
-def clean(df):
-    pass
 
 if __name__ =="__main__":
     clean()

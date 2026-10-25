@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
@@ -7,8 +6,7 @@ from linear_regression import (
     LinearRegressionScratch, mae, rmse, r2,
 )
 from feature_extraction import (
-    chronological_split, build_features, build_with_interactions,
-)
+    chronological_split, build_features, )
 
 # --- Synthetic energy data (replace with your real loader) ---
 """
@@ -27,8 +25,16 @@ for t in range(n_hours):
     rows.append([ts.strftime("%Y-%m-%d"), ts.strftime("%H:00:00"), co, mw])
 df = pd.DataFrame(rows, columns=["date", "time", "company", "MW"])
 """
+
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
 def train_linea_regression():
-    df = pd.read_csv("../data/all_data_READY.csv")
+    input_path = PROJECT_ROOT / 'data' / 'all_data_READY.csv'
+    figure_path = PROJECT_ROOT / 'figures'
+
+    df = pd.read_csv(input_path)
 
     DATETIME = "Datetime"
     COMPANY = "Company"
@@ -66,7 +72,8 @@ def train_linea_regression():
     ax.set_yscale("log")
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig('../figures/statistics/lr_gradient_stats.png')
+    merged_path = figure_path / 'statistics' / 'lr_gradient_stats.png'
+    plt.savefig(merged_path)
     joblib.dump(m_gd, "lr_gradient_energy_model.joblib")
 
 

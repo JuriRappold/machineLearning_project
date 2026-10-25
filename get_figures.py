@@ -1,10 +1,6 @@
-import numpy as np
-from pathlib import Path
-import sys
-import matplotlib.pyplot as plt
 import pandas as pd
-from plot_outliers import calculate_outliers, plot_outliers
-
+from plot_outliers import plot_outliers
+"""
 cwd = Path.cwd().resolve()
 project_root = next(
     (path for path in (cwd, *cwd.parents) if (path / 'plot_outliers.py').is_file()),
@@ -15,13 +11,13 @@ if project_root is None:
 
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
-cleaned_dir = project_root / 'data' / 'cleaned'
+"""
+cleaned_dir = "data/cleaned"  #project_root / 'data' / 'cleaned'
 threshold = 3.0
 
 def plot_cleaned_file(filename):
     """Plot the load values from one cleaned CSV."""
-    data = pd.read_csv(cleaned_dir / filename)
+    data = pd.read_csv(f"{cleaned_dir}/{filename}")
     company = filename.removesuffix("_hourly_CLEANED.csv")
     value_columns = [column for column in data.columns if column.endswith('MW')]
     if len(value_columns) != 1:
